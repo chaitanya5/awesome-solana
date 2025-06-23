@@ -2532,6 +2532,7 @@ dependencies = [
  "borsh-derive 1.5.7",
  "num-derive",
  "solana-program",
+ "solana-system-interface",
  "spl-associated-token-account",
  "spl-token",
  "thiserror 2.0.12",

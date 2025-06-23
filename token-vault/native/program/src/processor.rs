@@ -1,12 +1,18 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
-    account_info::{AccountInfo, next_account_info},
+    account_info::{AccountInfo},
     entrypoint::ProgramResult,
     pubkey::Pubkey,
-    system_instruction, system_program,
 };
 
 use crate::error;
+use crate::instructions::{
+    initialize_vault::initialize_vault,
+    initialize_user::initialize_user,
+    deposit_tokens::deposit_tokens,
+    withdraw_tokens::withdraw_tokens,
+
+};
 
 #[derive(Debug, BorshSerialize, BorshDeserialize)]
 pub enum VaultInstruction {
@@ -25,10 +31,9 @@ pub fn process_instruction(
         .map_err(|_| error::VaultError::InvalidInstruction)?;
 
     match instr {
-        VaultInstruction::InitializeVault => Ok(()),
-        VaultInstruction::InitializeUser => Ok(()),
-        VaultInstruction::Deposit { amount } => Ok(()),
-        VaultInstruction::Withdraw { amount } => Ok(()),
+        VaultInstruction::InitializeVault => initialize_vault(program_id, accounts, instruction_data),
+        VaultInstruction::InitializeUser => initialize_user(program_id, accounts, instruction_data),
+        VaultInstruction::Deposit { amount } => deposit_tokens(program_id, accounts, amount),
+        VaultInstruction::Withdraw { amount } => withdraw_tokens(program_id, accounts, amount),
     }
-    Ok(())
 }
