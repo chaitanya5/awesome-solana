@@ -1,5 +1,8 @@
 [workspace]
-members = [
+members = [ 
+    #token-escrow,
+    "token-escrow/native/program",
+    "token-escrow/anchor/programs/*",
     #token-vault,
     "token-vault/anchor/programs/*",
     "token-vault/native/program"
