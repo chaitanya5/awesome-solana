@@ -23,10 +23,11 @@ pub mod escrow {
     }
 
     pub fn take_offer(ctx: Context<TakeOffer>) -> Result<()> {
-        instructions::take_offer::take_offer(ctx)
+        instructions::take_offer::send_wanted_tokens_to_maker(&ctx)?;
+        instructions::take_offer::withdraw_tokens_from_vault_to_taker(ctx)
     }
 
     pub fn refund_offer(ctx: Context<RefundOffer>) -> Result<()> {
-        instructions::refund_offer::refund_offer(ctx)
+        instructions::refund_offer::refund_tokens_to_maker(ctx)
     }
 }

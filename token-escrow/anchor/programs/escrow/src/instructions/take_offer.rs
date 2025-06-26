@@ -1,4 +1,4 @@
-use super::shared::transfer_tokens;
+use super::shared::{close_ata, transfer_tokens};
 use crate::{errors::EscrowErrorCode, state::Offer};
 
 use anchor_lang::prelude::*;
@@ -63,7 +63,7 @@ pub struct TakeOffer<'info> {
 
     // The Vault ATA which holds the tokens for the offer. It's owner is the offer state account.
     #[account(
-        mut,
+        mut @EscrowErrorCode::AccountNotMutable,
         associated_token::mint = token_mint_a,
         associated_token::authority = offer,
         associated_token::token_program = token_program,
@@ -103,7 +103,7 @@ pub fn send_wanted_tokens_to_maker(context: &Context<TakeOffer>) -> Result<()> {
     Ok(())
 }
 
-pub fn withdraw_tokens_from_vault_to_taker(context: &Context<TakeOffer>) -> Result<()> {
+pub fn withdraw_tokens_from_vault_to_taker(context: Context<TakeOffer>) -> Result<()> {
     // Since the Offer account owns the Vault, we will say
     // there is one signer (the offer), with the seeds of the specific offer account
     // We can use these signer seeds to withdraw the token from the vault
@@ -125,9 +125,15 @@ pub fn withdraw_tokens_from_vault_to_taker(context: &Context<TakeOffer>) -> Resu
         signers_seeds,
     )
     .map_err(|_| EscrowErrorCode::TokenTransferFailed)?;
-    Ok(())
-}
 
-pub fn close_the_vault(context: &Context<TakeOffer>) -> Result<()> {
+    // Close the vault and return the rent to the maker
+    close_ata(
+        &context.accounts.vault_ata_a,
+        &context.accounts.taker.to_account_info(),
+        &context.accounts.offer.to_account_info(),
+        &context.accounts.token_program,
+        signers_seeds,
+    )
+    .map_err(|_| EscrowErrorCode::FailedVaultClosure)?;
     Ok(())
 }
