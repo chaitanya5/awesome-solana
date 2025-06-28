@@ -31,7 +31,7 @@ pub fn process_instruction(
         .map_err(|_| error::VaultError::InvalidInstruction)?;
 
     match instr {
-        VaultInstruction::InitializeVault => initialize_vault(program_id, accounts, instruction_data),
+        VaultInstruction::InitializeVault => initialize_vault(program_id, accounts),
         VaultInstruction::InitializeUser => initialize_user(program_id, accounts, instruction_data),
         VaultInstruction::Deposit { amount } => deposit_tokens(program_id, accounts, amount),
         VaultInstruction::Withdraw { amount } => withdraw_tokens(program_id, accounts, amount),
